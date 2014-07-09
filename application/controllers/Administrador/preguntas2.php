@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Preguntas1 extends CI_Controller {
+class Preguntas2 extends CI_Controller {
   function __construct() {
       parent::__construct();
       $this->load->library('menu',array('active'=>'configuracion'));
@@ -18,26 +18,26 @@ class Preguntas1 extends CI_Controller {
 			redirect('auth', 'refresh');
 		}
      //carga menu navegacion
-      $this->load->library('navegacion',array('menu'=>array('Configuracion','Encuesta','Preguntas parte 1'),'active'=>'Preguntas parte 1'));
+      $this->load->library('navegacion',array('menu'=>array('Configuracion','Encuesta','Preguntas parte 2'),'active'=>'Preguntas parte 2'));
       $this->data['navegacion'] = $this->navegacion->GenerarNavegacion();
       //      
       
       
       //carga menu sidebar
-      $this->load->library('sidebar',array('menu'=>array('Preguntas parte 1','Preguntas parte 2'),'paginas'=>array('Preguntas parte 1'=>  base_url()."preguntas1/",'Preguntas parte 2'=>  base_url()."preguntas2/"),'active'=>'Preguntas parte 1'));
+      $this->load->library('sidebar',array('menu'=>array('Preguntas parte 2'),'paginas'=>array('Preguntas parte 2'=>  base_url()."preguntas2/"),'active'=>'Preguntas parte 2'));
       $this->data['sidebar'] = $this->sidebar->GenerarMenu();
       //    
       
       $this->data['segmento']=  $this->uri->segment(3);      
-      $this->data['preguntas'] = $this->preguntas_model->ObtenerPreguntas1Paginadas('10',$this->data['segmento']);          
-      $config['base_url'] = base_url().'preguntas1/index';      
-      $config['total_rows'] = $this->preguntas_model->TotalRows1();      
+      $this->data['preguntas'] = $this->preguntas_model->ObtenerPreguntas2Paginadas('10',$this->data['segmento']);          
+      $config['base_url'] = base_url().'preguntas2/index';      
+      $config['total_rows'] = $this->preguntas_model->TotalRows2();      
       $config['per_page'] = '10';      
       $this->pagination->initialize($config);
       
       $this->data['paginacion'] = $this->pagination->create_links();     
            
-      $vista['tab2'] = $this->load->view('Administrador/preguntas1/index.php',$this->data,TRUE);
+      $vista['tab2'] = $this->load->view('Administrador/preguntas2/index.php',$this->data,TRUE);
       $vista['active2']=true;
       $this->load->view('Administrador/tabfoot.php',$vista); 
       
@@ -57,7 +57,7 @@ class Preguntas1 extends CI_Controller {
                         if ($this->form_validation->run() == true)
                         {
                             $data =  $this->input->post('id');                      
-                            $pregunta = $this->preguntas_model->ObtenerPregunta1($data,true)->row();
+                            $pregunta = $this->preguntas_model->ObtenerPregunta2($data,true)->row();
                             $devolver = array(
                                 'pregunta'      => $pregunta->pregunta,                                
                                 'id'            => $pregunta->idpregunta,

@@ -43,7 +43,7 @@
             location.href='<?php echo base_url().'administrador/entorno';  ?>';
        });
        $('#ta2').click(function(){
-            location.href='<?php echo base_url().'administrador/preguntas1';  ?>';
+            location.href='<?php echo base_url().'administrador/preguntas2';  ?>';
        });
         $('#ta3').click(function(){
             location.href='<?php echo base_url().'administrador/zona';  ?>';

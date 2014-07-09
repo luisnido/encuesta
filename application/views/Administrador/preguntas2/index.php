@@ -65,9 +65,11 @@
                     <label class="control-label">Indicador:</label>
                     <div class="controls">
                       <select name = "idindicador" id = "idindicador" >
-                        <?php foreach($indicadores->result() as $indicador){?>
-                           <option value="<?php echo $indicador->idindicador; ?>"><?php echo $indicador->nombre; ?></option>
-                        <?php }?>
+                          <?php if($indicadores){ ?>
+                            <?php foreach($indicadores->result() as $indicador){?>
+                               <option value="<?php echo $indicador->idindicador; ?>"><?php echo $indicador->nombre; ?></option>
+                            <?php }?>
+                          <?php } ?>
                       </select>                        
                     </div>             
                 </div>
@@ -75,9 +77,11 @@
                     <label class="control-label">Tipo:</label>
                     <div class="controls">
                       <select name = "idtipo" id = "idtipo" >
-                        <?php foreach($tipos->result() as $tipo){?>
-                           <option value="<?php echo $tipo->idtipo; ?>"><?php echo $tipo->nombre; ?></option>
-                        <?php }?>
+                          <?php if($tipos){ ?>
+                                <?php foreach($tipos->result() as $tipo){?>
+                                   <option value="<?php echo $tipo->idtipo; ?>"><?php echo $tipo->nombre; ?></option>
+                                <?php }?>  
+                          <?php } ?>
                       </select>                        
                     </div>             
                 </div>
@@ -114,23 +118,27 @@
                     <label class="control-label">Indicador:</label>
                     <div class="controls">
                       <select name = "idindicador" id = "idindicador" >
-                        <?php foreach($indicadores->result() as $indicador){?>
-                           <option value="<?php echo $indicador->idindicador; ?>"><?php echo $indicador->nombre; ?></option>
-                        <?php }?>
+                           <?php if($indicadores){ ?>
+                            <?php foreach($indicadores->result() as $indicador){?>
+                               <option value="<?php echo $indicador->idindicador; ?>"><?php echo $indicador->nombre; ?></option>
+                            <?php }?>
+                           <?php }?>
                       </select>                        
                     </div>             
                 </div>
-                <div id="idtipo-crear-v" class="control-group">
+                <div id="tipo-crear-v" class="control-group">
                     <label class="control-label">Tipo:</label>
                     <div class="controls">
                       <select name = "idtipo" id = "idtipo" >
-                        <?php foreach($tipos->result() as $tipo){?>
-                           <option value="<?php echo $tipo->idtipo; ?>"><?php echo $tipo->nombre; ?></option>
-                        <?php }?>
+                          <?php if($tipos){ ?>
+                            <?php foreach($tipos->result() as $tipo){?>
+                               <option value="<?php echo $tipo->idtipo; ?>"><?php echo $tipo->nombre; ?></option>
+                            <?php }?>
+                           <?php }?>
                       </select>                        
                     </div>             
                 </div>
-                <div id="nombre-crear-v" class="control-group">
+                <div id="pregunta-crear-v" class="control-group">
                     <label class="control-label">Pregunta:</label>
                     <div class="controls">
                         <textarea id="pregunta" name="pregunta" rows="3"></textarea>                    
@@ -161,15 +169,21 @@
               <fieldset>        
                  <input type='hidden' name='id' id="id" value='' />
                  <div  id="indicador-eliminar-v"  class="control-group">
-                     <labe class="control-label">Indicador</labe>
+                     <label class="control-label">Indicador</label>
                      <div class="controls">
                        <input type="text" value="" name="indicador" id="indicador" disabled />
                      </div>
                  </div>
                  <div id="tipo-eliminar-v"  class="control-group">
-                     <labe class="control-label">Tipo</labe>
+                     <label class="control-label">Tipo</label>
                      <div class="controls">                         
                        <input type="text" value="" name="tipo" id="tipo" disabled />
+                     </div>
+                 </div>
+                 <div id="pregunta-eliminar-v"  class="control-group">
+                     <label class="control-label">Pregunta</label>
+                     <div class="controls">                         
+                         <textarea rows="3" name="pregunta" id="pregunta" disabled="disabled"></textarea>
                      </div>
                  </div>
                  <div class="control-group">
@@ -192,16 +206,17 @@
       
       $(document).on('click','.editar',function(){
            $.ajax({
-           url:'<?php echo base_url() ?>'+'administrador/preguntas1/obtenerIndicadorPost',
+           url:'<?php echo base_url() ?>'+'administrador/preguntas2/obtenerPreguntaPost',
            type: 'POST',
            data:{id: $(this).attr('id')},
            success: function(msj){
            console.log(msj);
            var  obj = $.parseJSON(msj);
               if(obj.ok){
-                $('#form-editar #nombre').val(obj.nombre); 
-                $('#form-editar #identorno option[value='+ obj.identorno +']').attr("selected",true);
+                $('#form-editar #idindicador option[value='+ obj.idindicador +']').attr("selected",true);
+                $('#form-editar #idtipo option[value='+ obj.identorno +']').attr("selected",true);
                 $('#form-editar #id').val(obj.id);
+                $('#form-editar #pregunta').val(obj.pregunta);
                 $('#editarModal').modal('show');
               }else{
                   alert('Error: '+obj.validacion);
@@ -213,15 +228,16 @@
       
       $(document).on('click','.eliminar',function(){
            $.ajax({
-           url:'<?php echo base_url() ?>'+'administrador/indicador/obtenerIndicadorPost',
+           url:'<?php echo base_url() ?>'+'administrador/preguntas2/obtenerPreguntaPost',
            type: 'POST',
            data:{id: $(this).attr('id')},
            success: function(msj){
            console.log(msj);
            var  obj = $.parseJSON(msj);
               if(obj.ok){
-                $('#form-eliminar #nombre').val(obj.nombre);
-                $('#form-eliminar #entorno').val(obj.entorno);  
+                $('#form-eliminar #tipo').val(obj.tipo);
+                $('#form-eliminar #indicador').val(obj.indicador);  
+                $('#form-eliminar #pregunta').val(obj.pregunta);  
                 $('#form-eliminar #id').val(obj.id);
                  $('#eliminarModal').modal('show');
               }else{
@@ -238,7 +254,7 @@
           $('#nombre-crear-v').removeClass('error');
           $('#nombre-crear-v').find('span').remove();
           $.ajax({
-           url:'<?php echo base_url() ?>'+'administrador/indicador/crearPost',
+           url:'<?php echo base_url() ?>'+'administrador/preguntas2/crearPost',
            type: 'POST',
            data: $('#form-crear').serialize(),
            success: function(msj){
