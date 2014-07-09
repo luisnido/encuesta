@@ -1,3 +1,4 @@
+
 <?php echo $head ?>
 <?php echo $menu ?>
 <?php echo $navegacion ?>

@@ -12,8 +12,7 @@ class Preguntas1 extends CI_Controller {
       
   }
 
-  function index()
-  { 
+  function index(){ 
       if(!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
 		{
 			redirect('auth', 'refresh');
@@ -40,116 +39,102 @@ class Preguntas1 extends CI_Controller {
            
       $vista['tab2'] = $this->load->view('Administrador/preguntas1/index.php',$this->data,TRUE);
       $vista['active2']=true;
-      $this->load->view('Administrador/tabfoot.php',$vista);  
-           
-           
-           
-           
-           
-  }
-  function crear(){
+      $this->load->view('Administrador/tabfoot.php',$vista); 
+      
+      
+    }
  
-      $contenido['preguntas'] = $this->preguntas_model->ObtenerPreguntas();
-      
-      
-     $this->load->view('Administrador/preguntas1/crear.php',$contenido);
-       
-  } 
-  
-  function editar(){
-      $idpregunta = $this->uri->segment(3); 
-      $contenido['preguntas'] = $this->preguntas_model->ObtenerPregunta($idpregunta);
-      $this->load->view('Administrador/preguntas_model/editar.php',$contenido);
+  function obtenerPreguntaPost(){
+      if(!$this->input->is_ajax_request())
+           {
+               redirect('404');
+           }
+           else
+           {
+              if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin()){     echo '';    }else{
+                        $this->form_validation->set_rules('id', 'id pregunta', 'required|trim|xss_clean|integer');
+                        
+                        if ($this->form_validation->run() == true)
+                        {
+                            $data =  $this->input->post('id');                      
+                            $pregunta = $this->preguntas_model->ObtenerPregunta1($data,true)->row();
+                            $devolver = array(
+                                'pregunta'      => $pregunta->pregunta,                                
+                                'id'            => $pregunta->idpregunta,
+                                'idindicador'   => $pregunta->idindicador,
+                                'indicador'     => $pregunta->indicador,
+                                'tipo'          => $pregunta->tipo,
+                                'idtipo'        => $pregunta->idtipo,
+                                'mensaje'       => 'Pregunta obtenido exitosamente',
+                                'ok'            => true,                               
+                            );
+                            
+                            echo json_encode($devolver);
+                        }
+                        else {
+                           $devolver = array( 
+                               'pregunta'=> $this->form_validation->set_value('pregunta'),   
+                               'validacion' => validation_errors(),
+                               'mensaje' => 'Error al obtener pregunta',
+                               'ok' => false
+                               );
+                           echo json_encode($devolver);
+                        }
+                }   
+           }
   }
+  
   function crearPost(){
-      
-      $data = array(
-          'idindicador' => $this->input->post('idindicador'),
-              'pregunta' => $this->input->post('pregunta'),
-              'idparte' => 1
-           //   'idtipo' => $this->input->post('idtipo'),     
-              ); 
-      $config = array(
-          array( 
-              'field' => 'idindicador',
-              'label' => 'Indicador',
-              'rules' => 'required'
-              ),
-          array('field'=>'pregunta',
-              'label'=>'Pregunta',
-              'rules'=>'trim|required|max_leght[255]')
-                   );     
-      
-      $this->form_validation->set_rules($config);
-
-        if ($this->form_validation->run() == FALSE)
-        { validation_errors();
-          redirect(base_url()."Pregunta1");
-        }
-        else
-        { $this->preguntas_model->NuevaPregunta($data);    
-        $this->session->set_flashdata('crear', 'Registro creado exitosamente');
-          redirect(base_url()."Pregunta1");      
-        }         
-  }
-  
-  
-  function editarPost(){
-        
-      $data = array(
-          'idindicador' => $this->input->post('idindicador'),
-              'pregunta' => $this->input->post('pregunta'),
-              'idparte' => 1
-           //   'idtipo' => $this->input->post('idtipo'),     
-              ); 
-      $config = array(
-          array( 
-              'field' => 'idindicador',
-              'label' => 'Indicador',
-              'rules' => 'required'
-              ),
-          array('field'=>'pregunta',
-              'label'=>'Pregunta',
-              'rules'=>'trim|required|max_leght[255]')
-                   );     
-      
-      $this->form_validation->set_rules($config);
-
-        if ($this->form_validation->run() == FALSE)
-        { validation_errors();
-          redirect(base_url()."Pregunta1");
-        }
-        else
-        { $this->preguntas_model->ModificarPregunta($data);    
-        $this->session->set_flashdata('crear', 'Registro creado exitosamente');
-          redirect(base_url()."Pregunta1");      
-        }   
-     }
-  
-  function eliminar(){
-      $id=  $this->uri->segment(3);
-      
-       $contenido['pregunta'] = $this->preguntas_model->ObtenerPregunta($id,true); 
-       $this->load->view('Administrador/indicador/eliminar.php',$contenido);
-      
-  }
-  
-  function eliminarPost(){
-      $id = $this->input->post('idpregunta');
-      $asociado = $this->preguntas_model->RegistrosAsociados($id);
-      if($asociado){
-          $this->session->set_flashdata('eliminar', 'No se puede eliminar por que posee registros asociados');
-             redirect(base_url()."Pregunta1");
-      }
-      else{
-     if( $this->preguntas_model->EliminarIndicador($id))
-         {
-     
-      $this->session->set_flashdata('eliminar', 'Eliminado exitosamente');
-      redirect(base_url()."Pregunta1");
-         }
-     }
-  }
+       if(!$this->input->is_ajax_request())
+          {
+             redirect('404');
+          }
+           else
+           {
+              if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+                {
+                   echo '';
+                          }else{
+                        $this->form_validation->set_rules('idindicador', 'Indicador', 'required|trim|xss_clean|integer');
+                        $this->form_validation->set_rules('pregunta', 'Pregunta', 'required|trim|xss_clean');
+                        $this->form_validation->set_rules('idtipo', 'Tipo', 'required|trim|xss_clean|integer');
+                        
+                        if ($this->form_validation->run() == true)
+                        {
+                            $data = array(
+                                'idindicador' => $this->input->post('idindicador'),
+                                'pregunta'    => $this->input->post('pregunta'),
+                                'idtipo'      => $this->input->post('idtipo')
+                                );
+                         
+                        }
+                        if ($this->form_validation->run() == true && $this->preguntas_model->NuevaPregunta1($data))
+                        {
+                            $pregunta = $this->preguntas_model->ObtenerPregunta1($this->preguntas_model->ultimo_id,true)->row();
+                            $devolver = array(
+                                'pregunta'      => $pregunta->pregunta,                                
+                                'id'            => $pregunta->idpregunta,
+                                'idindicador'   => $pregunta->idindicador,
+                                'indicador'     => $pregunta->indicador,
+                                'tipo'          => $pregunta->tipo,
+                                'idtipo'        => $pregunta->idtipo,
+                                'mensaje'       => 'Pregunta agregado exitosamente',
+                                'ok'            => true, 
+                                'contenido'     => $this->contenido->GenerarPregunta($pregunta->idpregunta,$pregunta->indicador,$pregunta->pregunta,$pregunta->tipo),
+                            );
+                            echo json_encode($devolver);
+                        }
+                        else {
+                           $devolver = array( 
+                               'nombre'=> form_error('nombre','<span class="help-inline">','</span>'),   
+                               'validacion' => validation_errors(),
+                               'ok' => false
+                               );
+                           echo json_encode($devolver);
+                        }
+                }   
+           }
+  } 
   
 }
 ?>
