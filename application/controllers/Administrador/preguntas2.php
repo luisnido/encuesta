@@ -28,15 +28,16 @@ class Preguntas2 extends CI_Controller {
       $this->data['sidebar'] = $this->sidebar->GenerarMenu();
       //    
       
-      $this->data['segmento']=  $this->uri->segment(3);      
+      $this->data['segmento']  =  $this->uri->segment(3);      
       $this->data['preguntas'] = $this->preguntas_model->ObtenerPreguntas2Paginadas('10',$this->data['segmento']);          
-      $config['base_url'] = base_url().'preguntas2/index';      
-      $config['total_rows'] = $this->preguntas_model->TotalRows2();      
-      $config['per_page'] = '10';      
-      $this->pagination->initialize($config);
-      
-      $this->data['paginacion'] = $this->pagination->create_links();     
+      $config['base_url']      = base_url().'preguntas2/index';      
+      $config['total_rows']    = $this->preguntas_model->TotalRows2();      
+      $config['per_page']      = '10';      
+      $this->pagination->initialize($config);      
+      $this->data['paginacion']  = $this->pagination->create_links();     
            
+      $this->data['indicadores'] = $this->preguntas_model->ObtenerIndicadoresNoAsignados();      
+      
       $vista['tab2'] = $this->load->view('Administrador/preguntas2/index.php',$this->data,TRUE);
       $vista['active2']=true;
       $this->load->view('Administrador/tabfoot.php',$vista); 
@@ -136,6 +137,12 @@ class Preguntas2 extends CI_Controller {
            }
   } 
   
+  
+  
+  function ObtenerTipos(){
+      
+      
+  }
 }
 ?>
 

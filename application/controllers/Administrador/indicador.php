@@ -1,7 +1,8 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Indicador extends CI_Controller {
-  function __construct() {
+
+function __construct() {
       parent::__construct();
       $this->load->library('menu',array('active'=>'configuracion'));
       $this->load->model('indicador_model');
@@ -231,21 +232,21 @@ function eliminarPost(){
            }
   }
  
- function nombre_check($nombre){
+function nombre_check($nombre){
      if($this->indicador_model->MismoNombre($nombre))  {  
       $this->form_validation->set_message('nombre_check', 'Ya existe un indicador con este nombre');
       return false;
      }else{return true;}
   }  
   
-  function id_check($id){
+function id_check($id){
      if($this->indicador_model->RegistrosAsociados($id))  {  
       $this->form_validation->set_message('id_check', 'El indicador posee registros asociados, no se puede eliminar');
       return false;
      }else{return true;}
   } 
   
-  function _render_page($view, $data=null, $render=false){
+function _render_page($view, $data=null, $render=false){
 
     $this->viewdata = (empty($data)) ? $this->data: $data;
 
@@ -253,8 +254,5 @@ function eliminarPost(){
 
     if (!$render) return $view_html;
   }
-
-
-
   
 }?>
