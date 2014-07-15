@@ -1,11 +1,11 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Preguntas_model extends CI_Model {
+class Encuesta_model extends CI_Model {
 
     function __construct() {
         parent::__construct();
         $this->load->database();
     }
-    function NuevaPregunta2($data){
+    function NuevaEncuesta($data){
        $this->db->insert('preguntas',$data);
           $this->ultimo_id= $this->db->insert_id();
           if($this->db->affected_rows() >0){           
@@ -16,25 +16,37 @@ class Preguntas_model extends CI_Model {
           }       
      }
      
-    function ObtenerPreguntas(){
-        $this->db->order_by("idpregunta", "desc");         
-        $query = $this->db->get('preguntas');
-        if($query->num_rows()>0){
-            return $query;
-        }
-        else{
-            return false;            
-        }
-    }
-    
-    function ObtenerPreguntas2Paginadas($limit,$offset=0){
-        $this->db->select('preguntas.idpregunta,preguntas.pregunta,preguntas.idtipo,preguntas.idindicador,indicadores.nombre as indicador, tipos_pregunta.nombre as tipo');
+    function ObtenerPreguntasParte1(){
+      /*$this->db->select('preguntas.idpregunta,preguntas.pregunta,preguntas.idindicador,indicadores.nombre as indicador,entornos.identorno, entornos.nombre as entorno');
         $this->db->from('preguntas');
         $this->db->join('indicadores', 'preguntas.idindicador = indicadores.idindicador');
         $this->db->join('tipos_pregunta', 'preguntas.idtipo = tipos_pregunta.idtipo');
-        $this->db->where('idparte',2);
-        $this->db->order_by('idpregunta','desc');  
-        $this->db->limit($limit,$offset);    
+        $this->db->join('entornos', 'indicadores.identorno = entornos.identorno');
+        $this->db->where('idparte',1);        
+        $this->db->order_by('idpregunta','asc'); */
+        
+      
+                
+           
+        $query = $this->db->get('indicadores');
+       //echo $this->db->last_query();
+        if($query && $query->num_rows()>0)
+            {
+            return $query;
+            }
+        else{return false;}
+    }
+    
+    function ObtenerPreguntasParte2(){
+        $this->db->select('preguntas.idpregunta,preguntas.pregunta,preguntas.idindicador,indicadores.nombre as indicador,entornos.identorno, entornos.nombre as entorno');
+        $this->db->from('preguntas');
+        $this->db->join('indicadores', 'preguntas.idindicador = indicadores.idindicador');
+        $this->db->join('tipos_pregunta', 'preguntas.idtipo = tipos_pregunta.idtipo');
+        $this->db->join('entornos', 'indicadores.identorno = entornos.identorno');
+        $this->db->where('idparte',2);        
+        $this->db->order_by('idpregunta','asc'); 
+        
+           
         $query = $this->db->get();
        //echo $this->db->last_query();
         if($query && $query->num_rows()>0)
@@ -75,7 +87,14 @@ class Preguntas_model extends CI_Model {
          
          
     }
-    
+        
+    function ObtenerRangos(){
+        $query = $this->db->get('rangos');
+        if($query->num_rows()>0){
+            return  $query;
+        }
+        else {return false;}
+    }
     
     function ObtenerPregunta2($id,$compuesto){      
         if($compuesto)
@@ -128,6 +147,7 @@ class Preguntas_model extends CI_Model {
              }
        else {return false;}
     }
+    
     function ObtenerTiposNoAsignados($idindicador){
         $q='select *
             from tipos_pregunta

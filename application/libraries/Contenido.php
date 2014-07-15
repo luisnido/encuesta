@@ -26,8 +26,8 @@ class Contenido{
         return $blabla;
     }
     
-    function GenerarPregunta1($id,$nombre,$entorno){
-        $blabla="<tr id='tr".$id."' class='success'><td>".$id."</td><td>".$nombre."</td><td>".$entorno."</td><td>
+    function GenerarPregunta2($id,$indicador,$pregunta,$tipo){
+        $blabla="<tr id='tr".$id."' class='success'><td>".$indicador."</td><td>".$pregunta."</td><td>".$tipo."</td><td>
                  <a class='editar' data-toggle='tooltip' title='Editar' titulo='editar' href='' id='".$id."'><i class='icon-edit'></i></a> &nbsp;
                  <a class='eliminar' data-toggle='tooltip' title='Eliminar'  titulo='eliminar' href='' id='".$id."'><i class='icon-remove'></i></a></td></tr>";
         

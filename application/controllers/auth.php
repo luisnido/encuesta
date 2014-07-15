@@ -47,7 +47,18 @@ class Auth extends CI_Controller {
 				$this->data['users'][$k]->groups = $this->ion_auth->get_users_groups($user->id)->result();
 			}*/
                          $this->data['usuario'] = $this->session->userdata('username');
-			redirect('administrador/inicio', $this->data);
+                         $user_groups = $this->ion_auth->get_users_groups()->result();
+                         foreach ($user_groups as $grupo ){
+                             if($grupo->id == 1){
+                                 
+                                 redirect('administrador/inicio', $this->data);
+                             }
+                             if($grupo->id == 3){
+                                 
+                                 redirect('encuestador/encuesta', $this->data);
+                             }
+                         }
+			
 		}
 	}
 

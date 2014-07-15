@@ -28,9 +28,9 @@ class Preguntas2 extends CI_Controller {
       $this->data['sidebar'] = $this->sidebar->GenerarMenu();
       //    
       
-      $this->data['segmento']  =  $this->uri->segment(3);      
+      $this->data['segmento']  = $this->uri->segment(4);      
       $this->data['preguntas'] = $this->preguntas_model->ObtenerPreguntas2Paginadas('10',$this->data['segmento']);          
-      $config['base_url']      = base_url().'preguntas2/index';      
+      $config['base_url']      = base_url().'administrador/preguntas2/index';      
       $config['total_rows']    = $this->preguntas_model->TotalRows2();      
       $config['per_page']      = '10';      
       $this->pagination->initialize($config);      
@@ -105,13 +105,14 @@ class Preguntas2 extends CI_Controller {
                             $data = array(
                                 'idindicador' => $this->input->post('idindicador'),
                                 'pregunta'    => $this->input->post('pregunta'),
-                                'idtipo'      => $this->input->post('idtipo')
+                                'idtipo'      => $this->input->post('idtipo'),
+                                'idparte'     => '2'
                                 );
                          
                         }
-                        if ($this->form_validation->run() == true && $this->preguntas_model->NuevaPregunta1($data))
+                        if ($this->form_validation->run() == true && $this->preguntas_model->NuevaPregunta2($data))
                         {
-                            $pregunta = $this->preguntas_model->ObtenerPregunta1($this->preguntas_model->ultimo_id,true)->row();
+                            $pregunta = $this->preguntas_model->ObtenerPregunta2($this->preguntas_model->ultimo_id,true)->row();
                             $devolver = array(
                                 'pregunta'      => $pregunta->pregunta,                                
                                 'id'            => $pregunta->idpregunta,
@@ -121,13 +122,13 @@ class Preguntas2 extends CI_Controller {
                                 'idtipo'        => $pregunta->idtipo,
                                 'mensaje'       => 'Pregunta agregado exitosamente',
                                 'ok'            => true, 
-                                'contenido'     => $this->contenido->GenerarPregunta($pregunta->idpregunta,$pregunta->indicador,$pregunta->pregunta,$pregunta->tipo),
+                                'contenido'     => $this->contenido->GenerarPregunta2($pregunta->idpregunta,$pregunta->indicador,$pregunta->pregunta,$pregunta->tipo),
                             );
                             echo json_encode($devolver);
                         }
                         else {
                            $devolver = array( 
-                               'nombre'=> form_error('nombre','<span class="help-inline">','</span>'),   
+                               'pregunta'=> form_error('pregunta','<span class="help-inline">','</span>'),   
                                'validacion' => validation_errors(),
                                'ok' => false
                                );
@@ -140,9 +141,87 @@ class Preguntas2 extends CI_Controller {
   
   
   function ObtenerTipos(){
-      
-      
-  }
+              if(!$this->input->is_ajax_request())
+           {
+               redirect('404');
+           }
+           else
+           {
+              if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+		{
+			echo '';
+		}else{
+                        $this->form_validation->set_rules('idindicador','Indicador','required|trim|xss_clean|integer');
+                     
+                        if ($this->form_validation->run() == true)
+                        {                           
+                            $id = $this->input->post('idindicador');
+                           
+                                                   
+                      $query=   $this->preguntas_model->ObtenerTiposNoAsignados($id);
+                      $options =" <option value='' disabled>Seleccione un tipo</option>";
+                      if($query){
+                          foreach ($query->result() as $q){
+                              $options = $options."<option value='".$q->idtipo."'>".$q->nombre.'</option>';
+                          }
+                      }
+                           
+                        $devolver = array(
+                                'contenido'  => $options,                               
+                                'ok'       => true
+                            );                            
+                            echo json_encode($devolver);
+                        }
+                        else {
+                           $devolver = array( 
+                              'mensaje' => validation_errors(),
+                               'ok' => false
+                               );
+                           echo json_encode($devolver);
+                        }
+                       
+                    
+                }
+		
+           }
+        }
+        
+  function ObtenerIndicadores(){
+              if(!$this->input->is_ajax_request())
+           {
+               redirect('404');
+           }
+           else
+           {
+              if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+		{
+			echo '';
+		}else{
+                      
+                           
+                                                   
+                      $query=   $this->preguntas_model->ObtenerIndicadoresNoAsignados();
+                      $options =" <option value='' disabled>Seleccione un indicador</option>";
+                      if($query){
+                          foreach ($query->result() as $q){
+                              $options = $options."<option value='".$q->idindicador."'>".$q->nombre.'</option>';
+                          }
+                      }
+                           
+                        $devolver = array(
+                                'contenido'  => $options,                               
+                                'ok'       => true
+                            );                            
+                            echo json_encode($devolver);
+                        }
+           
+                       
+                    
+                
+		
+           }
+        }
+       
 }
 ?>
 

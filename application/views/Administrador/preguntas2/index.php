@@ -61,10 +61,11 @@
                   <hr/>
         <form class="form-horizontal" method="post" id="form-crear" name="form-crear">
             <fieldset>
-                <div id="idindicador-crear-v" class="control-group">
+                <div id="indicador-crear-v" class="control-group">
                     <label class="control-label">Indicador:</label>
                     <div class="controls">
                       <select name = "idindicador" id = "idindicador" >
+                           <option disabled selected>Seleccione indicador</option>
                           <?php if($indicadores){ ?>
                             <?php foreach($indicadores->result() as $indicador){?>
                                <option value="<?php echo $indicador->idindicador; ?>"><?php echo $indicador->nombre; ?></option>
@@ -73,7 +74,7 @@
                       </select>                        
                     </div>             
                 </div>
-                 <div id="idtipo-crear-v" class="control-group">
+                 <div id="tipo-crear-v" class="control-group">
                     <label class="control-label">Tipo:</label>
                     <div class="controls">
                       <select name = "idtipo" id = "idtipo" >
@@ -85,7 +86,7 @@
                       </select>                        
                     </div>             
                 </div>
-                <div id="nombre-crear-v" class="control-group">
+                <div id="pregunta-crear-v" class="control-group">
                     <label class="control-label">Pregunta:</label>
                     <div class="controls">
                         <textarea id="pregunta" name="pregunta" rows="3"></textarea>                    
@@ -112,12 +113,13 @@
      <p class="text-warning">Modificar pregunta</p>
                  <hr/> 
    <form id="form-editar" method="post" name="form-editar" class="form-horizontal">
-        <fieldset>
+       
               <fieldset>
                 <div id="indicador-crear-v" class="control-group">
                     <label class="control-label">Indicador:</label>
                     <div class="controls">
                       <select name = "idindicador" id = "idindicador" >
+                         
                            <?php if($indicadores){ ?>
                             <?php foreach($indicadores->result() as $indicador){?>
                                <option value="<?php echo $indicador->idindicador; ?>"><?php echo $indicador->nombre; ?></option>
@@ -150,7 +152,7 @@
                         <button type="submit" class="btn btn-success" >Modificar</button>
                     </div>
                 </div> 
-            </fieldset> 
+          
         </fieldset>
     </form>
   </div>  
@@ -200,6 +202,24 @@
  <script>
   $(document).ready(function(){
       $('#crear').click(function(){
+        
+           $.ajax({
+           url:'<?php echo base_url() ?>administrador/preguntas2/ObtenerIndicadores',
+           type: 'POST',
+           
+           success: function(msj){
+       
+            var obj = $.parseJSON(msj);
+              if(obj.ok){
+                $('#form-crear #idindicador').html('').append(obj.contenido);
+              
+              }else{
+                  alert('error');
+              }
+             
+            // alert(msj);
+           }
+       }); 
           $('#crearModal').modal('show');
           
       });
@@ -251,8 +271,12 @@
       });      
       
       $('#form-crear').submit(function(){   
-          $('#nombre-crear-v').removeClass('error');
-          $('#nombre-crear-v').find('span').remove();
+          $('#indicador-crear-v').removeClass('error');
+          $('#indicador-crear-v').find('span').remove();
+          $('#pregunta-crear-v').removeClass('error');
+          $('#pregunta-crear-v').find('span').remove();
+          $('#tipo-crear-v').removeClass('error');
+          $('#tipo-crear-v').find('span').remove();
           $.ajax({
            url:'<?php echo base_url() ?>'+'administrador/preguntas2/crearPost',
            type: 'POST',
@@ -262,7 +286,7 @@
            var  obj = $.parseJSON(msj);
               if(obj.ok){
                    $('#crearModal').modal('hide');               
-                   $('#form-crear #nombre').val('');                
+                   $('#form-crear #pregunta').val('');                
                    $(obj.contenido).prependTo('#tabla tbody');  
                    $('#tr'+obj.id).hide().fadeIn(2000,function(){$('#tr'+obj.id).removeClass('success',6000,'easeOutQuint');});
                    $('a').tooltip();
@@ -271,7 +295,7 @@
               }else{
                   
                   $('#nombre-crear-v').addClass('error');
-                  $('#nombre-crear-v').find('#nombre').after(obj.nombre);
+                  $('#nombre-crear-v').find('#pregunta').after(obj.pregunta);
               }
            }
        }); 
@@ -337,7 +361,32 @@
        }); 
    
        return false;
-      });});
+      });
+      
+       $(document).on('change','#form-crear #idindicador',function(e){
+    
+    
+        if($(this).val() !==''){
+          $.ajax({
+           url:'<?php echo base_url() ?>administrador/preguntas2/ObtenerTipos',
+           type: 'POST',
+           data: {idindicador: $(this).val()},
+           success: function(msj){
+       
+            var obj = $.parseJSON(msj);
+              if(obj.ok){
+                $('#form-crear #idtipo').html('').append(obj.contenido);
+              }else{
+                  alert('error');
+              }
+             
+            // alert(msj);
+           }
+       }); 
+       }
+    });
+      
+      });
 </script>
 
 <?php echo $foot; ?>
